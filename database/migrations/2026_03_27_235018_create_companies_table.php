@@ -13,7 +13,8 @@ return new class extends Migration
     {
         Schema::create('companies', function (Blueprint $table) {
             $table->id();
-            $table->string('company_name')->comment('Nome da empresa ou organização principal');
+            $table->string('company_name',50)->comment('Nome da empresa ou organização principal');
+            $table->string('company_cnpj',50)->comment('Armazena cnpj da empresa');
             $table->timestamps();
         });
     }

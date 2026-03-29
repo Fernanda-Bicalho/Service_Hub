@@ -33,9 +33,10 @@ class StoreTicketRequest extends FormRequest
     {
         return [
         'project_id' => ['required', 'exists:projects,id'],
-        'user_id' => ['required', 'exists:users,id'],
-        'ticket_subject' => ['required', 'string'],
-        'ticket_status' => ['sometimes', 'in:open,closed']
+        'ticket_title' => ['required', 'string'],
+        'ticket_description' => ['required', 'string'],
+        'ticket_status' => ['sometimes', 'in:pending,processing,done,error'],
+        'ticket_attachment' => ['nullable']
         ];
     }
 }
