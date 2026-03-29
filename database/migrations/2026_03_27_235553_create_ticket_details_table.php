@@ -14,8 +14,9 @@ return new class extends Migration
         Schema::create('ticket_details', function (Blueprint $table) {
             $table->id();
             $table->foreignId('ticket_id')->unique()->constrained()->onDelete('cascade')->comment('FK única vinculada ao ticket pai (Relacionamento 1:1)');
-            $table->text('technical_specs')->comment('Descrição técnica detalhada, logs de erro ou especificações de hardware');
-            $table->timestamps();
+            $table->json('ticket_details_enriched_data')->comment('Descrição técnica detalhada, logs de erro ou especificações de hardware');
+            $table->timestamp('ticket_details_processed_at')->comment('Armazena a data de processamento');
+            $table->timestamp('ticket_details_notified_at')->nullable()->comment('Armazena a data de notificação');
         });
     }
 

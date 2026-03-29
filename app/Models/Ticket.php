@@ -6,15 +6,21 @@ use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\Relations\HasOne;
+use Illuminate\Database\Eloquent\Factories\HasFactory;
+
 
 class Ticket extends Model
 {
+    use HasFactory;
+
     protected $fillable = [
 
         'project_id',
         'user_id',
-        'ticket_subject',
-        'ticket_status'
+        'ticket_title',
+        'ticket_description',
+        'ticket_status',
+        'ticket_attachment'
     ];
 
     public function project() : BelongsTo
@@ -27,8 +33,8 @@ class Ticket extends Model
       return $this->belongsTo(User::class);
     }
 
-    public function details() : HasOne
+    public function detail() : HasOne
     {
-        return $this->hasOne(Ticket::class);
+        return $this->hasOne(TicketDetail::class);
     }
 }

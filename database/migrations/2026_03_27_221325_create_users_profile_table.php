@@ -15,7 +15,7 @@ return new class extends Migration
             $table->id();
             $table->foreignId('user_id')->unique()->constrained()->onDelete('cascade')->comment('FK única vinculada ao usuário autenticado (Relacionamento 1:1)');
             $table->string('user_phone')->nullable()->comment('Número de contato com DDD e DDI');
-            $table->string('user_position')->comment('Cargo ou função hierárquica do usuário na plataforma');
+            $table->string('user_role')->comment('Cargo ou função hierárquica do usuário na plataforma');
             $table->timestamps();
         });
     }

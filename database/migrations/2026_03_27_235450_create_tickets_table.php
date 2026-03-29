@@ -15,8 +15,10 @@ return new class extends Migration
             $table->id();
             $table->foreignId('project_id')->constrained()->onDelete('cascade')->comment('ID do projeto ao qual este ticket está vinculado');
             $table->foreignId('user_id')->constrained()->comment('ID do usuário que realizou a abertura do ticket');
-            $table->string('ticket_subject')->comment('Assunto resumido ou título da ocorrência');
-            $table->enum('ticket_status', ['open', 'closed'])->default('open')->comment('Estado atual do ticket: open (aberto), closed (fechado)');
+            $table->string('ticket_title', 50)->comment('Armazena título da ocorrência');
+            $table->text('ticket_description')->comment('Armazena a descrição da ocorrencia');
+            $table->enum('ticket_status', ['pending', 'processing', 'done', 'error'])->default('pending')->comment('Estado atual do ticket');
+            $table->string('ticket_attachment')->nullable()->comment('Armazena caminho do anexo');
             $table->timestamps();
         });
     }
