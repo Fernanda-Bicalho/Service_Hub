@@ -35,27 +35,26 @@ class TicketService
             ->withQueryString();
     }
 
-    /**
-     * Cria um novo ticket vinculando ao usuário logado.
-     */
-
+  
      public function store(array $data): Ticket
      {
-         // 📎 Upload do anexo (se existir)
+         
          if (
              isset($data['ticket_attachment']) &&
              $data['ticket_attachment'] instanceof UploadedFile
          ) {
-             $data['ticket_attachment'] = $data['ticket_attachment']->store('tickets');
+            $data['ticket_attachment'] = $data['ticket_attachment']->store('tickets', 'public');
+            $data['ticket_status'] = 'pending';
+         }else{
+            $data['ticket_status'] = 'done';
          }
- 
-         // 🟡 Status inicial
-         $data['ticket_status'] = 'pending';
+
+        
          $data['user_id'] = Auth::id();
  
          $ticket = Ticket::create($data);
  
-         // 🚀 Dispara o Job apenas se houver anexo
+
          if (!empty($ticket->ticket_attachment)) {
              ProcessTicketJob::dispatch($ticket);
          }
@@ -65,7 +64,7 @@ class TicketService
 
         public function update(Ticket $ticket, array $data): Ticket
         {
-            // 📎 Se atualizar anexo, remove o antigo e salva novo
+   
             if (
                 isset($data['ticket_attachment']) &&
                 $data['ticket_attachment'] instanceof UploadedFile
@@ -76,10 +75,8 @@ class TicketService
     
                 $data['ticket_attachment'] = $data['ticket_attachment']->store('tickets');
     
-                // Sempre que novo arquivo for enviado, volta para pending
                 $data['ticket_status'] = 'pending';
     
-                // Dispara novo processamento
                 ProcessTicketJob::dispatch($ticket);
             }
     
@@ -88,9 +85,10 @@ class TicketService
             return $ticket;
         }
 
+
         public function delete(Ticket $ticket): void
         {
-            // 🧹 Remove anexo
+
             if ($ticket->ticket_attachment) {
                 Storage::delete($ticket->ticket_attachment);
             }

@@ -1,8 +1,8 @@
 <script setup>
 import AuthenticatedLayout from '@/Layouts/AuthenticatedLayout.vue';
-import { Head, useForm, router} from '@inertiajs/vue3';
+import { Head, useForm, router, usePage} from '@inertiajs/vue3';
 import { computed } from 'vue';
-import { onMounted, ref } from 'vue';
+import { onMounted, ref, watch } from 'vue';
 
 
 const props = defineProps({
@@ -12,7 +12,7 @@ const props = defineProps({
     projects: Array
 });
 
-// 🎨 Status visual
+
 const statusMap = {
     pending: { label: 'Pendente', color: 'bg-yellow-100 text-yellow-800' },
     processing: { label: 'Processando', color: 'bg-blue-100 text-blue-800' },
@@ -20,7 +20,6 @@ const statusMap = {
     error: { label: 'Erro', color: 'bg-red-100 text-red-800' },
 };
 
-// 📌 Formulário
 const form = useForm({
     ticket_title: '',
     ticket_description: '',
@@ -29,23 +28,20 @@ const form = useForm({
     
 });
 
-// 📎 Upload handler
 const handleFile = (e) => {
     form.ticket_attachment = e.target.files[0];
 };
 
-// 🚀 Submit
 const submit = () => {
     form.post(route('tickets.store'), {
         forceFormData: true,
         onSuccess: (page) => {
-            // page.props.tickets agora contém o ticket recém-criado
             form.reset();
+            showToast('Ticket criado com sucesso!!!');
         },
     });
 };
 
-// 🔍 Filtro
 const search = (e) => {
     router.get(route('tickets.index'), {
         search: e.target.value
@@ -55,18 +51,73 @@ const search = (e) => {
 
 const ticketsData = ref(props.tickets);
 
-// função para atualizar a lista
 const fetchTickets = () => {
     router.get(route('tickets.index'), {}, {
         preserveState: true,
-        only: ['tickets'], // só atualiza os tickets
+        only: ['tickets'],
     });
 };
 
 onMounted(() => {
-    // Atualiza a cada 5 segundos
-    setInterval(fetchTickets, 5000);
+    setInterval(fetchTickets, 10000);
+    if (page.props.flash?.success) {
+        showToast(page.props.flash.success, 'success');
+    }
+
 });
+
+
+/* TOAST */
+
+const page = usePage();
+
+const toasts = ref([]);
+
+const showToast = (message, type = 'info') => {
+    const id = Date.now();
+
+    toasts.value.push({ id, message, type });
+
+    setTimeout(() => {
+        toasts.value = toasts.value.filter(t => t.id !== id);
+    }, 4000);
+};
+
+const previousTickets = ref([]);
+
+watch(
+    () => props.tickets?.data,
+    (newTickets) => {
+        if (!previousTickets.value.length) {
+            previousTickets.value = newTickets;
+            return;
+        }
+
+        newTickets.forEach(ticket => {
+            const old = previousTickets.value.find(t => t.id === ticket.id);
+
+            if (old && old.ticket_status !== ticket.ticket_status) {
+
+                if (ticket.ticket_status === 'done') {
+                    showToast(`Ticket concluído`, 'success');
+                }
+
+                if (ticket.ticket_status === 'error') {
+                    showToast(`Ticket falhou`, 'error');
+                }
+
+                if (ticket.ticket_status === 'processing') {
+                    showToast(`Ticket em processamento`, 'info');
+                }
+            }
+        });
+
+        previousTickets.value = newTickets;
+    },
+    { deep: true }
+);
+
+/* TOAST */
 
 </script>
 
@@ -80,10 +131,25 @@ onMounted(() => {
             </h2>
         </template>
 
+        <div class="fixed top-5 right-5 space-y-2 z-50">
+    <div
+        v-for="toast in toasts"
+        :key="toast.id"
+        :class="[
+            'px-4 py-3 rounded shadow-lg text-white text-sm font-semibold transition-all',
+            toast.type === 'success' && 'bg-green-500',
+            toast.type === 'error' && 'bg-red-500',
+            toast.type === 'info' && 'bg-blue-500'
+        ]"
+    >
+        {{ toast.message }}
+    </div>
+</div>
+
         <div class="py-10">
             <div class="mx-auto max-w-7xl space-y-8 sm:px-6 lg:px-8">
 
-                <!-- 🔥 FORM -->
+                
                 <div class="bg-white shadow-sm rounded-lg border p-6">
                     <h3 class="text-lg font-semibold mb-4">Criar Ticket</h3>
 
@@ -133,7 +199,6 @@ onMounted(() => {
                     </form>
                 </div>
 
-                <!-- 🔍 FILTRO -->
                 <div class="flex justify-between items-center">
                     <input
                         type="text"
@@ -144,7 +209,6 @@ onMounted(() => {
                     />
                 </div>
 
-                <!-- 📊 LISTA -->
                 <div class="bg-white shadow-sm rounded-lg border overflow-hidden">
                     <table class="w-full text-sm">
                         <thead class="bg-gray-100 text-left">
@@ -200,7 +264,6 @@ onMounted(() => {
                     </table>
                 </div>
 
-                <!-- 📄 PAGINAÇÃO -->
                 <div class="flex gap-2">
                     <button
                         v-for="link in tickets.links"

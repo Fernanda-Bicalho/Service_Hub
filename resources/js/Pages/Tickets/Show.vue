@@ -6,7 +6,6 @@ const props = defineProps({
     ticket: Object
 });
 
-// 🎨 Status visual
 const statusMap = {
     pending: { label: 'Pendente', color: 'bg-yellow-100 text-yellow-800' },
     processing: { label: 'Processando', color: 'bg-blue-100 text-blue-800' },
@@ -14,7 +13,6 @@ const statusMap = {
     error: { label: 'Erro', color: 'bg-red-100 text-red-800' },
 };
 
-// 🔙 voltar
 const goBack = () => {
     router.visit(route('tickets.index'));
 };
@@ -42,7 +40,6 @@ const goBack = () => {
         <div class="py-10">
             <div class="mx-auto max-w-5xl space-y-6 sm:px-6 lg:px-8">
 
-                <!-- 📌 CARD PRINCIPAL -->
                 <div class="bg-white shadow rounded-lg p-6 border">
 
                     <div class="flex justify-between items-start mb-4">
@@ -66,10 +63,8 @@ const goBack = () => {
 
                 </div>
 
-                <!-- 📊 INFORMAÇÕES -->
                 <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
 
-                    <!-- 🏢 Projeto -->
                     <div class="bg-white shadow rounded-lg p-5 border">
                         <h3 class="font-semibold text-gray-700 mb-2">
                             Projeto
@@ -84,7 +79,6 @@ const goBack = () => {
                         </p>
                     </div>
 
-                    <!-- 👤 Usuário -->
                     <div class="bg-white shadow rounded-lg p-5 border">
                         <h3 class="font-semibold text-gray-700 mb-2">
                             Responsável
@@ -101,22 +95,20 @@ const goBack = () => {
 
                 </div>
 
-                <!-- 📎 ANEXO -->
                 <div v-if="ticket.ticket_attachment" class="bg-white shadow rounded-lg p-5 border">
                     <h3 class="font-semibold text-gray-700 mb-2">
                         Anexo
                     </h3>
 
                     <a
-                        :href="`/storage/${ticket.ticket_attachment}`"
-                        target="_blank"
-                        class="text-indigo-600 hover:underline text-sm"
+                      :href="`/storage/${ticket.ticket_attachment}`"
+                       target="_blank"
+                       class="text-indigo-600 hover:underline text-sm"
                     >
-                        Visualizar arquivo
+                      Visualizar arquivo
                     </a>
                 </div>
 
-                <!-- ⚙️ PROCESSAMENTO -->
                 <div class="bg-white shadow rounded-lg p-5 border">
 
                     <h3 class="font-semibold text-gray-700 mb-4">
@@ -132,7 +124,6 @@ const goBack = () => {
                             </strong>
                         </div>
 
-                        <!-- 📊 JSON formatado -->
                         <div class="mt-4">
                             <h4 class="text-sm font-semibold mb-2">
                                 Dados enriquecidos

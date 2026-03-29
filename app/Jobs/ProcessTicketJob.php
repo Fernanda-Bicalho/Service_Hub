@@ -11,6 +11,7 @@ use Illuminate\Foundation\Bus\Dispatchable;
 use Illuminate\Queue\InteractsWithQueue;
 use Illuminate\Queue\SerializesModels;
 use Illuminate\Support\Str;
+use App\Notifications\TicketProcessedNotification;
 
 
 class ProcessTicketJob implements ShouldQueue
@@ -32,24 +33,20 @@ class ProcessTicketJob implements ShouldQueue
      */
     public function handle(): void
     {
-        // 🔵 Atualiza status para processing
         $this->ticket->update([
             'ticket_status' => 'processing'
         ]);
     
         try {
     
-            // 📎 Lê o arquivo
             $content = Storage::get($this->ticket->ticket_attachment);
     
-            // 🧠 Processamento simples (pode evoluir depois)
             $result = [
                 'lines' => substr_count($content, "\n"),
                 'words' => str_word_count($content),
                 'characters' => Str::length($content),
             ];
     
-            // 💾 Salva ou atualiza TicketDetail
             TicketDetail::updateOrCreate(
                 ['ticket_id' => $this->ticket->id],
                 [
@@ -58,19 +55,21 @@ class ProcessTicketJob implements ShouldQueue
                 ]
             );
     
-            // 🟢 Sucesso
             $this->ticket->update([
                 'ticket_status' => 'done'
             ]);
+
+
+          $this->ticket->detail()->update([
+         'ticket_details_notified_at' => now()
+        ]);
     
         } catch (\Throwable $e) {
     
-            // 🔴 Erro
             $this->ticket->update([
                 'ticket_status' => 'error'
             ]);
     
-            // opcional: log
             \Log::error($e->getMessage());
         }
     }

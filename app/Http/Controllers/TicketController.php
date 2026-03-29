@@ -10,6 +10,7 @@ use App\Models\Project;
 use App\Models\Ticket;
 use App\Services\TicketService;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
 use Inertia\Inertia;
 
 class TicketController extends Controller
@@ -61,6 +62,12 @@ class TicketController extends Controller
     {
         $this->ticket_service->update($ticket,$request->validated());
         return redirect()->back()->with('success', 'Ticket atualizado com sucesso !');
+
+        $msg = $request->ticket_status === 'concluido' 
+           ? 'Ticket finalizado e arquivado!' 
+           : 'Ticket atualizado com sucesso!';
+
+    return redirect()->back()->with('success', $msg);
     }
 
 

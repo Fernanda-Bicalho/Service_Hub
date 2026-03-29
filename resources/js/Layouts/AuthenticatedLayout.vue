@@ -19,18 +19,18 @@ const showingNavigationDropdown = ref(false);
                 <!-- Primary Navigation Menu -->
                 <div class="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
                     <div class="flex h-16 justify-between">
-                        <div class="flex">
+                        <div class="flex items-center">
                             <!-- Logo -->
-                            <div class="flex shrink-0 items-center">
+                            <!--<div class="flex shrink-0 items-center">
                                 <Link :href="route('dashboard')">
                                     <ApplicationLogo
                                         class="block h-9 w-auto fill-current text-gray-800"
                                     />
                                 </Link>
-                            </div>
+                            </div>-->
 
                             <!-- Navigation Links -->
-                            <div
+                           <!-- <div
                                 class="hidden space-x-8 sm:-my-px sm:ms-10 sm:flex"
                             >
                                 <NavLink
@@ -39,7 +39,10 @@ const showingNavigationDropdown = ref(false);
                                 >
                                     Dashboard
                                 </NavLink>
-                            </div>
+                            </div>-->
+                            <h1 class="text-blue-500 text-xl">
+                                ServiceHub
+                            </h1>
                         </div>
 
                         <div class="hidden sm:ms-6 sm:flex sm:items-center">
